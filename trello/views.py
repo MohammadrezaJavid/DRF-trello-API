@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from . import models, serializers
-from .permissions import IsOwnerOnlyOrPublic, IsAccessToList
+from .permissions import IsOwnerOnlyOrPublic, IsAccessToList, IsAccessToCard
 
 
 class BoardView(viewsets.ModelViewSet):
@@ -33,3 +33,18 @@ class ListView(viewsets.ModelViewSet):
             serializer.save(board=board)
         except models.Board.DoesNotExist:
             raise RuntimeWarning("Board Object is None")
+
+
+class CardView(viewsets.ModelViewSet):
+    lookup_field = 'id'
+    permission_classes = (IsAccessToCard,)
+    queryset = models.Card.objects.all()
+    serializer_class = serializers.CardSerializer
+
+    def perform_create(self, serializer):
+        ID = int(self.request.data['listId'])
+        try:
+            lists = models.List.objects.get(id=ID)
+            serializer.save(list=lists, creator=self.request.user)
+        except models.List.DoesNotExist:
+            raise RuntimeWarning("List Object is None")

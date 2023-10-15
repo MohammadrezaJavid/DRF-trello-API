@@ -9,3 +9,8 @@ class IsOwnerOnlyOrPublic(permissions.BasePermission):
 class IsAccessToList(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return (obj.board.creator == request.user) or (obj.board.visibility == 'pu')
+
+
+class IsAccessToCard(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return (obj.creator == request.user) or (obj.list.board.visibility == 'pu')
