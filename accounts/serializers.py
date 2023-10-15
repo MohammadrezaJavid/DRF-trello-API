@@ -1,17 +1,22 @@
 from rest_framework import serializers, validators
 from django.contrib.auth.password_validation import validate_password
 from .models import User
-from trello.models import Board
+from trello.models import Board, Card
 
 
 class UserSerializer(serializers.ModelSerializer):
-    boards = serializers.PrimaryKeyRelatedField(many=True, queryset=Board.objects.all(), required=False)
+    boards = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Board.objects.all(), required=False,
+    )
+    cardsCreate = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Card.objects.all(), required=False,
+    )
 
     class Meta:
         model = User
         fields = [
             'id', 'email', 'firstName', 'lastName',
-            'boards',
+            'boards', 'cardsCreate',
         ]
 
 
@@ -24,7 +29,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     )
 
     # password field is write only, mandatory
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password]
+    )
     confirmPassword = serializers.CharField(write_only=True, required=True)
 
     class Meta:
