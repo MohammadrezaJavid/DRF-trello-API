@@ -14,8 +14,8 @@ class BoardView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        visibility = self.request.query_params.get('visibility', 'public')
-        queryset = models.Board.objects.filter(visibility=visibility)
-        if visibility == 'private':
-            queryset = queryset.filter(creator=user)
+        querysetPublic = models.Board.objects.filter(visibility='pu')
+        querysetCreator = models.Board.objects.filter(creator=user)
+        queryset = querysetPublic.union(querysetCreator)
+
         return queryset
