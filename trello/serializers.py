@@ -61,3 +61,9 @@ class CardSerializer(serializers.ModelSerializer):
             'description': {'required': False},
             'tag': {'required': False},
         }
+
+
+class TagCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Card
+        fields = '__all__'

@@ -39,7 +39,7 @@ class IsAccessToCard(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method == 'DELETE':
             return request.user == view.get_object().creator
-        elif (request.method == 'POST') or (request.method == 'PUT'):
+        elif request.method == 'PUT':
             return (request.user == List.objects.get(id=request.data['listId']).creator) or (
                     List.objects.get(id=request.data['listId']).board.visibility == 'pu')
         elif (request.method == 'GET') and ('id' in request.query_params):

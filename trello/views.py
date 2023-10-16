@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from . import models, serializers
 from .permissions import IsAccessToBoard, IsAccessToList, IsAccessToCard
 
@@ -48,3 +50,15 @@ class CardView(viewsets.ModelViewSet):
             serializer.save(list=lists, creator=self.request.user)
         except models.List.DoesNotExist:
             raise RuntimeWarning("List Object is None")
+
+
+class TagCardView(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = models.Card.objects.all()
+    serializer_class = serializers.TagCardSerializer
+
+    def list(self, request, *args, **kwargs):
+        tag = self.kwargs.get('tag')
+        queryset = self.filter_queryset(self.get_queryset().filter(tag=tag, creator=request.user))
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
