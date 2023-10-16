@@ -1,11 +1,11 @@
 from rest_framework import viewsets
 from . import models, serializers
-from .permissions import IsOwnerOnlyOrPublic, IsAccessToList, IsAccessToCard
+from .permissions import IsAccessToBoard, IsAccessToList, IsAccessToCard
 
 
 class BoardView(viewsets.ModelViewSet):
     lookup_field = 'id'
-    permission_classes = (IsOwnerOnlyOrPublic,)
+    permission_classes = (IsAccessToBoard,)
     queryset = models.Board.objects.all()
     serializer_class = serializers.BoardSerializer
 
@@ -14,7 +14,7 @@ class BoardView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         querysetPublic = models.Board.objects.filter(visibility='pu')
-        querysetCreator = models.Board.objects.filter(creator=self.request.user)
+        querysetCreator = models.Board.objects.filter(creator=self.request.user.pk)
         queryset = querysetPublic | querysetCreator
 
         return queryset
@@ -30,7 +30,7 @@ class ListView(viewsets.ModelViewSet):
         ID = int(self.request.data['boardId'])
         try:
             board = models.Board.objects.get(id=ID)
-            serializer.save(board=board)
+            serializer.save(board=board, creator=self.request.user)
         except models.Board.DoesNotExist:
             raise RuntimeWarning("Board Object is None")
 
