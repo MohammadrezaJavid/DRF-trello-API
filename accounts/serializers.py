@@ -1,12 +1,15 @@
 from rest_framework import serializers, validators
 from django.contrib.auth.password_validation import validate_password
 from .models import User
-from trello.models import Board, Card
+from trello.models import Board, Card, List
 
 
 class UserSerializer(serializers.ModelSerializer):
     boards = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Board.objects.all(), required=False,
+    )
+    lists = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=List.objects.all(), required=False,
     )
     cardsCreate = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Card.objects.all(), required=False,
@@ -16,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'email', 'firstName', 'lastName',
-            'boards', 'cardsCreate',
+            'boards', 'lists', 'cardsCreate',
         ]
 
 
