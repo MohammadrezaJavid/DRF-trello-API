@@ -22,6 +22,7 @@ class BoardSerializer(serializers.ModelSerializer):
 
 
 class ListSerializer(serializers.ModelSerializer):
+    creator = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     board = serializers.PrimaryKeyRelatedField(
         many=False, read_only=True,
     )
@@ -38,7 +39,7 @@ class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = [
-            'id', 'title', 'boardId', 'createdAt',
+            'id', 'title', 'boardId', 'createdAt', 'creator',
             'board', 'cards',
         ]
 
@@ -52,6 +53,11 @@ class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
         fields = [
-            'id', 'title', 'createdAt',
+            'id', 'title', 'createdAt', 'description', 'tag',
             'list', 'listId', 'creator',
         ]
+
+        extra_kwargs = {
+            'description': {'required': False},
+            'tag': {'required': False},
+        }

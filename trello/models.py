@@ -26,6 +26,7 @@ class List(models.Model):
     title = models.CharField(max_length=255, verbose_name="title")
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name="lists")
     boardId = models.IntegerField(editable=False, validators=[MinValueValidator(1)])
+    creator = models.ForeignKey(User, related_name="lists", on_delete=models.CASCADE)
     createdAt = models.DateTimeField(auto_now_add=True)
 
 
@@ -33,13 +34,14 @@ class Card(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=255, verbose_name="title")
     createdAt = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=300, verbose_name="description")
+    tag = models.CharField(max_length=150, verbose_name="tag")
 
     list = models.ForeignKey(List, on_delete=models.CASCADE, related_name="cards")
     listId = models.IntegerField(editable=False, validators=[MinValueValidator(1)])
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cardsCreate")
 
     # assignUsers = models.ManyToManyField(User, related_name='cardsAssign', blank=True)
-    # description = models.CharField(max_length=300, verbose_name="title")
     # status = models.CharField(max_length=50, verbose_name="status")
     # deadLine = models.DateTimeField(auto_now_add=True)
-    # tag = models.CharField(max_length=150, verbose_name="tag")
+
