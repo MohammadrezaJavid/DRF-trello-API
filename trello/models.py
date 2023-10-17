@@ -31,17 +31,39 @@ class List(models.Model):
 
 
 class Card(models.Model):
+    WATCH = 'w'
+    NOT_WATCH = 'nw'
+
+    NOTIFICATIONS_STATUS = (
+        (WATCH, 'w'),
+        (NOT_WATCH, 'nw'),
+    )
+
     id = models.AutoField(primary_key=True, editable=False)
     title = models.CharField(max_length=255, verbose_name="title")
     createdAt = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=300, verbose_name="description")
     tag = models.CharField(max_length=150, verbose_name="tag")
+    notifications = models.CharField(max_length=2, choices=NOTIFICATIONS_STATUS, default=NOT_WATCH)
 
     list = models.ForeignKey(List, on_delete=models.CASCADE, related_name="cards")
     listId = models.IntegerField(editable=False, validators=[MinValueValidator(1)])
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cardsCreate")
 
     # assignUsers = models.ManyToManyField(User, related_name='cardsAssign', blank=True)
-    # status = models.CharField(max_length=50, verbose_name="status")
     # deadLine = models.DateTimeField(auto_now_add=True)
 
+
+class Comment(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    text = models.CharField(max_length=300)
+    writedAt = models.DateTimeField(auto_now_add=True)
+
+    writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="writerComments")
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, related_name="comments")
+    cardId = models.IntegerField(editable=False, null=True, blank=True, validators=[MinValueValidator(1)])
+    replyComment = models.ForeignKey('self', on_delete=models.CASCADE, related_name="replies", blank=True, null=True)
+    replyCommentId = models.IntegerField(editable=False, null=True, blank=True, validators=[MinValueValidator(1)])
+
+    class Meta:
+        ordering = ['-writedAt']

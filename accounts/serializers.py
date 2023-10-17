@@ -1,26 +1,29 @@
 from rest_framework import serializers, validators
 from django.contrib.auth.password_validation import validate_password
 from .models import User
-from trello.models import Board, Card, List
+from trello.models import Board, Card, List, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
     boards = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Board.objects.all(), required=False,
-    )
+        many=True, queryset=Board.objects.all(), required=False)
     lists = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=List.objects.all(), required=False,
-    )
+        many=True, queryset=List.objects.all(), required=False)
     cardsCreate = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Card.objects.all(), required=False,
-    )
+        many=True, queryset=Card.objects.all(), required=False)
+    writerComments = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Comment.objects.all())
+
+    # cardsAssign = serializers.PrimaryKeyRelatedField(
+    #     many=True, queryset=Card.objects.all(), required=False)
 
     class Meta:
         model = User
         fields = [
             'id', 'email', 'firstName', 'lastName',
-            'boards', 'lists', 'cardsCreate',
+            'boards', 'lists', 'cardsCreate', 'writerComments',  # 'cardsAssign',
         ]
+        # extra_kwargs = {'cardsAssign': {'required': False}}
 
 
 class RegisterSerializer(serializers.ModelSerializer):

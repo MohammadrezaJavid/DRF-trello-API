@@ -2,7 +2,12 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from . import models, serializers
-from .permissions import IsAccessToBoard, IsAccessToList, IsAccessToCard
+from .permissions import (
+    IsAccessToBoard,
+    IsAccessToList,
+    IsAccessToCard,
+    IsAccessToComment
+)
 
 
 class BoardView(viewsets.ModelViewSet):
@@ -62,3 +67,28 @@ class TagCardView(viewsets.ReadOnlyModelViewSet):
         queryset = self.filter_queryset(self.get_queryset().filter(tag=tag, creator=request.user))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class CommentView(viewsets.ModelViewSet):
+    lookup_field = 'id'
+    permission_classes = [IsAccessToComment]
+    queryset = models.Comment.objects.all()
+    serializer_class = serializers.CommentSerializer
+
+    def perform_create(self, serializer):
+        try:
+            if 'replyCommentId' in self.request.data:
+                cardId = int(self.request.data['cardId'])
+                card = models.Card.objects.get(id=cardId)
+
+                replyCommentId = int(self.request.data['replyCommentId'])
+                replyComment = models.Comment.objects.get(id=replyCommentId)
+
+                serializer.save(card=card, writer=self.request.user, replyComment=replyComment)
+            else:
+                cardId = int(self.request.data['cardId'])
+                card = models.Card.objects.get(id=cardId)
+                serializer.save(card=card, writer=self.request.user)
+
+        except models.Card.DoesNotExist:
+            raise RuntimeWarning("Card Object is None")
