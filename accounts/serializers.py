@@ -13,17 +13,18 @@ class UserSerializer(serializers.ModelSerializer):
         many=True, queryset=Card.objects.all(), required=False)
     writerComments = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Comment.objects.all())
-
-    # cardsAssign = serializers.PrimaryKeyRelatedField(
-    #     many=True, queryset=Card.objects.all(), required=False)
+    assignBoards = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True)
+    assignCards = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True)
 
     class Meta:
         model = User
         fields = [
             'id', 'email', 'firstName', 'lastName',
-            'boards', 'lists', 'cardsCreate', 'writerComments',  # 'cardsAssign',
+            'boards', 'lists', 'cardsCreate',
+            'writerComments', 'assignBoards', 'assignCards',
         ]
-        # extra_kwargs = {'cardsAssign': {'required': False}}
 
 
 class RegisterSerializer(serializers.ModelSerializer):

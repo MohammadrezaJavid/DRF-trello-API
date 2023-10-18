@@ -58,7 +58,7 @@ class CardView(viewsets.ModelViewSet):
 
 
 class TagCardView(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     queryset = models.Card.objects.all()
     serializer_class = serializers.TagCardSerializer
 
@@ -71,7 +71,7 @@ class TagCardView(viewsets.ReadOnlyModelViewSet):
 
 class CommentView(viewsets.ModelViewSet):
     lookup_field = 'id'
-    permission_classes = [IsAccessToComment]
+    permission_classes = (IsAccessToComment,)
     queryset = models.Comment.objects.all()
     serializer_class = serializers.CommentSerializer
 

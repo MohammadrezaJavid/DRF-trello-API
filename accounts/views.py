@@ -6,7 +6,7 @@ from .permissions import IsOwnerOrReadonly
 
 # User List
 class UserList(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -14,7 +14,7 @@ class UserList(generics.ListAPIView):
 # User Retrieve / Update / Destroy
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
-    permission_classes = [IsOwnerOrReadonly]
+    permission_classes = (IsOwnerOrReadonly,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

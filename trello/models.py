@@ -19,6 +19,7 @@ class Board(models.Model):
     visibility = models.CharField(max_length=2, choices=VISIBILITY_TYPES, default=PRIVATE)
     creator = models.ForeignKey(User, related_name="boards", on_delete=models.CASCADE)
     createdAt = models.DateTimeField(auto_now_add=True)
+    assignUsers = models.ManyToManyField(User, related_name="assignBoards", blank=True)
 
 
 class List(models.Model):
@@ -49,8 +50,8 @@ class Card(models.Model):
     list = models.ForeignKey(List, on_delete=models.CASCADE, related_name="cards")
     listId = models.IntegerField(editable=False, validators=[MinValueValidator(1)])
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cardsCreate")
+    assignUsers = models.ManyToManyField(User, related_name="assignCards", blank=True)
 
-    # assignUsers = models.ManyToManyField(User, related_name='cardsAssign', blank=True)
     # deadLine = models.DateTimeField(auto_now_add=True)
 
 

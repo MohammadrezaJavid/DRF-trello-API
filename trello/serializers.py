@@ -1,25 +1,32 @@
 from django.core.validators import MinValueValidator
 from rest_framework import serializers
 from .models import Board, List, Card, Comment
-from accounts.serializers import UserSerializer
+from accounts.models import User
 
 
 class BoardSerializer(serializers.ModelSerializer):
     creator = serializers.PrimaryKeyRelatedField(
-        many=False, read_only=True,
-    )
+        many=False, read_only=True)
     lists = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=List.objects.all(),
-        required=False,
-    )
+        required=False)
+    # assignUsers = UserSerializer(many=True)
+    assignUsers = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all(),
+        required=False)
 
     class Meta:
         model = Board
         fields = [
             'id', 'title', 'visibility', 'createdAt',
-            'creator', 'lists',
+            'creator', 'lists', 'assignUsers',
         ]
+
+        extra_kwargs = {
+            'assignUsers': {'required': False},
+        }
 
 
 class ListSerializer(serializers.ModelSerializer):
@@ -47,13 +54,18 @@ class CardSerializer(serializers.ModelSerializer):
     comments = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Comment.objects.all(), required=False)
 
+    assignUsers = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all(),
+        required=False)
+
     # assignUsers = UserSerializer(many=True, read_only=True)
 
     class Meta:
         model = Card
         fields = [
             'id', 'title', 'createdAt', 'description', 'tag', 'notifications',
-            'list', 'listId', 'creator', 'comments',  # 'assignUsers',
+            'list', 'listId', 'creator', 'comments', 'assignUsers',
         ]
 
         extra_kwargs = {
@@ -61,7 +73,7 @@ class CardSerializer(serializers.ModelSerializer):
             'tag': {'required': False},
             'notifications': {'required': False},
             'comments': {'required': False},
-            # 'assignUsers': {'required': False},
+            'assignUsers': {'required': False},
         }
 
 

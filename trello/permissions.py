@@ -14,7 +14,8 @@ class IsAccessToBoard(permissions.BasePermission):
                    (view.get_object().visibility == 'pu')
 
     def has_object_permission(self, request, view, obj):
-        return (obj.creator == request.user) or (obj.visibility == 'pu')
+        return (obj.creator == request.user) or (obj.visibility == 'pu') or (
+                request.user.pk in obj.assignUsers)
 
 
 class IsAccessToList(permissions.BasePermission):
