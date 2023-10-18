@@ -20,11 +20,12 @@ class BoardView(viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
     def get_queryset(self):
+        querysetAssignUser = models.Board.objects.filter(assignUsers__id=self.request.user.pk)
         querysetPublic = models.Board.objects.filter(visibility='pu')
         querysetCreator = models.Board.objects.filter(creator=self.request.user.pk)
-        queryset = querysetPublic | querysetCreator
+        queryset = querysetPublic | querysetCreator | querysetAssignUser
 
-        return queryset
+        return queryset.distinct()
 
 
 class ListView(viewsets.ModelViewSet):
@@ -47,6 +48,13 @@ class CardView(viewsets.ModelViewSet):
     permission_classes = (IsAccessToCard,)
     queryset = models.Card.objects.all()
     serializer_class = serializers.CardSerializer
+
+    def get_queryset(self):
+        querysetAssignUser = models.Card.objects.filter(assignUsers__id=self.request.user.pk)
+        querysetCreator = models.Card.objects.filter(creator=self.request.user.pk)
+        queryset = querysetCreator | querysetAssignUser
+
+        return queryset.distinct()
 
     def perform_create(self, serializer):
         ID = int(self.request.data['listId'])

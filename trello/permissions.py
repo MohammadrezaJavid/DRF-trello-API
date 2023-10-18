@@ -1,34 +1,46 @@
 from rest_framework import permissions
-from .models import Board, List, Comment, Card
+from .models import Board, List, Comment, Card, User
 
 
 class IsAccessToBoard(permissions.BasePermission):
     def has_permission(self, request, view):
         if (request.method == 'DELETE') or (request.method == 'PUT'):
             return request.user == view.get_object().creator
-        elif (request.method == 'POST') or (
-                (request.method == 'GET') and ('id' not in request.query_params)):
+        elif (request.method == 'GET') and ('id' not in request.query_params):
             return True
+        elif request.method == 'POST':
+            return request.user in User.objects.all()
         elif (request.method == 'GET') and ('id' in request.query_params):
-            return (request.user == view.get_object().creator) or \
-                   (view.get_object().visibility == 'pu')
+            return (request.user == view.get_object().creator) or (view.get_object().visibility == 'pu') or (
+                    request.user in view.get_object().assignUsers)
 
     def has_object_permission(self, request, view, obj):
         return (obj.creator == request.user) or (obj.visibility == 'pu') or (
-                request.user.pk in obj.assignUsers)
+                request.user in obj.assignUsers)
 
 
 class IsAccessToList(permissions.BasePermission):
+
+    @staticmethod
+    def isAssignBoard(request) -> bool:
+        boards = Board.objects.get(assignUsers__id=request.user.pk)
+        for board in boards:
+            if request.boardId == board.pk:
+                return True
+        return False
+
     def has_permission(self, request, view):
         if (request.method == 'DELETE') or (request.method == 'PUT'):
             return request.user == view.get_object().creator
         elif request.method == 'POST':
             return (request.user == Board.objects.get(id=request.data['boardId']).creator) or (
-                    Board.objects.get(id=request.data['boardId']).visibility == 'pu')
+                    Board.objects.get(id=request.data['boardId']).visibility == 'pu') or (
+                       self.isAssignBoard(request))
         elif (request.method == 'GET') and ('id' in request.query_params):
             return (request.user == view.get_object().board.creator) or (
                     request.user == view.get_object().creator) or (
-                           view.get_object().board.visibility == 'pu')
+                           view.get_object().board.visibility == 'pu') or (
+                       self.isAssignBoard(request))
         else:
             return True
 
