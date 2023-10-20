@@ -77,6 +77,16 @@ class TagCardView(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
+class NotificationView(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = models.Notification.objects.all()
+    serializer_class = serializers.NotificationSerializer
+
+    def get_queryset(self):
+        queryset = models.Notification.objects.filter(notificationUsers__id=self.request.user.pk)
+        return queryset
+
+
 class CommentView(viewsets.ModelViewSet):
     lookup_field = 'id'
     permission_classes = (IsAccessToComment,)

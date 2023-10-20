@@ -5,52 +5,58 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'boards', viewset=views.BoardView, basename='board')
 
-list_list = views.ListView.as_view({
+listList = views.ListView.as_view({
     'post': 'create'
 })
-list_detail = views.ListView.as_view({
+listDetail = views.ListView.as_view({
     'get': 'retrieve',
     'put': 'update',
     'patch': 'partial_update',
     'delete': 'destroy'
 })
 
-card_list = views.CardView.as_view({
+cardList = views.CardView.as_view({
     'post': 'create'
 })
-card_detail = views.CardView.as_view({
+cardDetail = views.CardView.as_view({
     'get': 'retrieve',
     'put': 'update',
     'patch': 'partial_update',
     'delete': 'destroy'
 })
 
-tag_card_list = views.TagCardView.as_view({
+tagCardList = views.TagCardView.as_view({
     'get': 'list'
 })
 
-card_comment_list = views.CommentView.as_view({
+cardCommentList = views.CommentView.as_view({
     'get': 'list',
     'post': 'create'
 })
-card_comment_detail = views.CommentView.as_view({
+cardCommentDetail = views.CommentView.as_view({
     'get': 'retrieve',
     'put': 'update',
     'patch': 'partial_update',
     'delete': 'destroy'
+})
+
+notificationUserList = views.NotificationView.as_view({
+    'get': 'list'
 })
 
 urlpatterns = [
     path('', include(router.urls)),
 
-    path('lists/', list_list, name='list-list'),
-    path('lists/<int:id>/', list_detail, name='list-detail'),
+    path('lists/', listList, name='list-list'),
+    path('lists/<int:id>/', listDetail, name='list-detail'),
 
-    path('cards/', card_list, name='card-list'),
-    path('cards/<int:id>/', card_detail, name='card-detail'),
+    path('cards/', cardList, name='card-list'),
+    path('cards/<int:id>/', cardDetail, name='card-detail'),
 
-    path('cards/tag/<str:tag>/', tag_card_list, name='card-list-by-tag'),
+    path('cards/tag/<str:tag>/', tagCardList, name='card-list-by-tag'),
 
-    path('cards/comment/', card_comment_list, name='comment-list'),
-    path('cards/comment/<int:id>/', card_comment_detail, name='comment-detail')
+    path('cards/comment/', cardCommentList, name='comment-list'),
+    path('cards/comment/<int:id>/', cardCommentDetail, name='comment-detail'),
+
+    path('user/notifications/', notificationUserList, name='notification-list')
 ]

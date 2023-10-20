@@ -1,6 +1,6 @@
 from django.core.validators import MinValueValidator
 from rest_framework import serializers
-from .models import Board, List, Card, Comment
+from .models import Board, List, Card, Comment, Notification
 from accounts.models import User
 
 
@@ -46,6 +46,18 @@ class ListSerializer(serializers.ModelSerializer):
         ]
 
 
+class NotificationSerializer(serializers.ModelSerializer):
+    notificationUsers = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all(),
+        required=False
+    )
+
+    class Meta:
+        model = Notification
+        fields = ['message', 'notificationUsers']
+
+
 class CardSerializer(serializers.ModelSerializer):
     creator = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     list = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
@@ -53,27 +65,29 @@ class CardSerializer(serializers.ModelSerializer):
         write_only=True, required=True, validators=[MinValueValidator(1)])
     comments = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Comment.objects.all(), required=False)
-
     assignUsers = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=User.objects.all(),
         required=False)
-
-    # assignUsers = UserSerializer(many=True, read_only=True)
+    notificationsCard = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Notification.objects.all(),
+        required=False)
 
     class Meta:
         model = Card
         fields = [
-            'id', 'title', 'createdAt', 'description', 'tag', 'notifications',
-            'list', 'listId', 'creator', 'comments', 'assignUsers',
+            'id', 'title', 'createdAt', 'description', 'tag', 'notificationsStatus', 'deadLine',
+            'list', 'listId', 'creator', 'comments', 'assignUsers', 'notificationsCard',
         ]
-
         extra_kwargs = {
             'description': {'required': False},
             'tag': {'required': False},
-            'notifications': {'required': False},
+            'notificationsStatus': {'required': False},
             'comments': {'required': False},
             'assignUsers': {'required': False},
+            'notificationsCard': {'required': False},
+            'deadLine': {'required': False},
         }
 
 
