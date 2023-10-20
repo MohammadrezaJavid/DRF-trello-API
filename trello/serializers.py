@@ -20,7 +20,7 @@ class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = [
-            'id', 'title', 'visibility', 'createdAt',
+            'title', 'visibility', 'createdAt',
             'creator', 'lists', 'assignUsers',
         ]
 
@@ -41,7 +41,7 @@ class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = [
-            'id', 'title', 'boardId', 'createdAt', 'creator',
+            'title', 'boardId', 'createdAt', 'creator',
             'board', 'cards',
         ]
 
@@ -77,7 +77,7 @@ class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
         fields = [
-            'id', 'title', 'createdAt', 'description', 'tag', 'notificationsStatus', 'deadLine',
+            'title', 'createdAt', 'description', 'tag', 'notificationsStatus', 'deadLine',
             'list', 'listId', 'creator', 'comments', 'assignUsers', 'notificationsCard',
         ]
         extra_kwargs = {
@@ -104,7 +104,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = [
-            'id', 'text', 'writedAt',
+            'text', 'writedAt',
             'writer', 'card', 'cardId', 'replyComment', 'replyCommentId',
         ]
 

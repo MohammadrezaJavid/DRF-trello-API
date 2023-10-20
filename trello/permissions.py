@@ -1,18 +1,29 @@
 from rest_framework import permissions
-from .models import Board, List, Comment, Card, User
+from .models import Board, List, Card, User
 
 
 class IsAccessToBoard(permissions.BasePermission):
     def has_permission(self, request, view):
         if (request.method == 'DELETE') or (request.method == 'PUT'):
-            return request.user == view.get_object().creator
+            return self.isTrueDelete(request, view)
         elif (request.method == 'GET') and ('id' not in request.query_params):
             return True
         elif request.method == 'POST':
-            return request.user in User.objects.all()
+            return self.isTruePost(request)
         elif (request.method == 'GET') and ('id' in request.query_params):
-            return (request.user == view.get_object().creator) or (view.get_object().visibility == 'pu') or (
-                    request.user in view.get_object().assignUsers)
+            return self.isTrueGet(request, view)
+
+    def isTrueGet(self, request, view):
+        return (self.isTrueDelete(request, view)) or (view.get_object().visibility == 'pu') or (
+                request.user in view.get_object().assignUsers)
+
+    @staticmethod
+    def isTruePost(request):
+        return request.user in User.objects.all()
+
+    @staticmethod
+    def isTrueDelete(request, view):
+        return request.user == view.get_object().creator
 
     def has_object_permission(self, request, view, obj):
         return (obj.creator == request.user) or (obj.visibility == 'pu') or (
@@ -31,18 +42,24 @@ class IsAccessToList(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if (request.method == 'DELETE') or (request.method == 'PUT'):
-            return request.user == view.get_object().creator
+            return IsAccessToBoard.isTrueDelete(request, view)
         elif request.method == 'POST':
-            return (request.user == Board.objects.get(id=request.data['boardId']).creator) or (
-                    Board.objects.get(id=request.data['boardId']).visibility == 'pu') or (
-                       self.isAssignBoard(request))
+            return self.isTruePost(request)
         elif (request.method == 'GET') and ('id' in request.query_params):
-            return (request.user == view.get_object().board.creator) or (
-                    request.user == view.get_object().creator) or (
-                           view.get_object().board.visibility == 'pu') or (
-                       self.isAssignBoard(request))
+            return self.isTrueGet(request, view)
         else:
             return True
+
+    def isTrueGet(self, request, view):
+        return (request.user == view.get_object().board.creator) or (
+            IsAccessToBoard.isTrueDelete(request, view)) or (
+                       view.get_object().board.visibility == 'pu') or (
+                   self.isAssignBoard(request))
+
+    def isTruePost(self, request):
+        return (request.user == Board.objects.get(id=request.data['boardId']).creator) or (
+                Board.objects.get(id=request.data['boardId']).visibility == 'pu') or (
+                   self.isAssignBoard(request))
 
     def has_object_permission(self, request, view, obj):
         return (obj.board.creator == request.user) or (obj.board.visibility == 'pu')
@@ -51,15 +68,23 @@ class IsAccessToList(permissions.BasePermission):
 class IsAccessToCard(permissions.BasePermission):
     def has_permission(self, request, view):
         if (request.method == 'DELETE') or (request.method == 'PUT'):
-            return request.user == view.get_object().creator
+            return IsAccessToBoard.isTrueDelete(request, view)
         elif request.method == 'POST':
-            return (request.user == List.objects.get(id=request.data['listId']).creator) or (
-                    List.objects.get(id=request.data['listId']).board.visibility == 'pu')
+            return self.isTruePost(request)
         elif (request.method == 'GET') and ('id' in request.query_params):
-            return (request.user == view.get_object().creator) or (
-                    view.get_object().list.board.visibility == 'pu')
+            return self.isTrueGet(request, view)
         else:
             return True
+
+    @staticmethod
+    def isTrueGet(request, view):
+        return (request.user == view.get_object().creator) or (
+                view.get_object().list.board.visibility == 'pu')
+
+    @staticmethod
+    def isTruePost(request):
+        return (request.user == List.objects.get(id=request.data['listId']).creator) or (
+                List.objects.get(id=request.data['listId']).board.visibility == 'pu')
 
     def has_object_permission(self, request, view, obj):
         return (obj.creator == request.user) or (obj.list.board.visibility == 'pu')
@@ -68,12 +93,20 @@ class IsAccessToCard(permissions.BasePermission):
 class IsAccessToComment(permissions.BasePermission):
     def has_permission(self, request, view):
         if (request.method == 'DELETE') or (request.method == 'PUT'):
-            return request.user == view.get_object().writer
+            return IsAccessToBoard.isTrueDelete(request, view)
         elif request.method == 'POST':
-            return (request.user == Card.objects.get(id=request.data['cardId']).creator) or (
-                    Card.objects.get(id=request.data['cardId']).list.board.visibility == 'pu')
+            return self.isTruePost(request)
         elif (request.method == 'GET') and ('id' in request.query_params):
-            return (request.user == view.get_object().writer) or (
-                    view.get_object().card.list.board.visibility == 'pu')
+            return self.isTrueGet(request, view)
         else:
             return True
+
+    @staticmethod
+    def isTrueGet(request, view):
+        return (request.user == view.get_object().writer) or (
+                view.get_object().card.list.board.visibility == 'pu')
+
+    @staticmethod
+    def isTruePost(request):
+        return (request.user == Card.objects.get(id=request.data['cardId']).creator) or (
+                Card.objects.get(id=request.data['cardId']).list.board.visibility == 'pu')
