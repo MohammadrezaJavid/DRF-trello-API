@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # 3rd party app
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_crontab',
 
     # my app
     'accounts.apps.AccountsConfig',
@@ -39,6 +40,11 @@ INSTALLED_APPS = [
 
 # Use my custom User model #
 AUTH_USER_MODEL = 'accounts.User'
+
+# Cron Jobs setting
+CRONJOBS = [
+    ('2 * * * *', 'trello.cron.sendDeadlineNotifications'),
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -85,24 +91,23 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': Env.NAME,
-#         'USER': Env.USER,
-#         'PASSWORD': Env.PASSWORD,
-#         'HOST': Env.HOST,
-#         'PORT': Env.PORT,
-#     },
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
