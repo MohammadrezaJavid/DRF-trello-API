@@ -3,3 +3,4 @@ db.sqlite3
 env
 .idea
 setDataCurl.sh
+__pycache__
