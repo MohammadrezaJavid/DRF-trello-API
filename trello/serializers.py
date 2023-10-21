@@ -20,7 +20,7 @@ class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = [
-            'title', 'visibility', 'createdAt',
+            'id', 'title', 'visibility', 'createdAt',
             'creator', 'lists', 'assignUsers',
         ]
 
@@ -41,7 +41,7 @@ class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = [
-            'title', 'boardId', 'createdAt', 'creator',
+            'id', 'title', 'boardId', 'createdAt', 'creator',
             'board', 'cards',
         ]
 

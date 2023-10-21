@@ -34,9 +34,10 @@ class IsAccessToList(permissions.BasePermission):
 
     @staticmethod
     def isAssignBoard(request) -> bool:
-        boards = Board.objects.get(assignUsers__id=request.user.pk)
+        boardId = request.data.get('boardId')
+        boards = Board.objects.filter(assignUsers__id=request.user.pk)
         for board in boards:
-            if request.boardId == board.pk:
+            if boardId == board.pk:
                 return True
         return False
 
