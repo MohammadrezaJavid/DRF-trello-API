@@ -72,15 +72,18 @@ class IsAccessToCard(permissions.BasePermission):
             return IsAccessToBoard.isTrueDelete(request, view)
         elif request.method == 'POST':
             return self.isTruePost(request)
-        elif (request.method == 'GET') and ('id' in request.query_params):
-            return self.isTrueGet(request, view)
+        elif (request.method == 'GET') and (type(view.kwargs.get('id')) == int):
+            return self.isTrueGet(request, view.kwargs.get('id'))
         else:
             return True
 
     @staticmethod
-    def isTrueGet(request, view):
-        return (request.user == view.get_object().creator) or (
-                view.get_object().list.board.visibility == 'pu')
+    def isTrueGet(request, cardId):
+        if (Card.objects.get(id=cardId).list.board.visibility == 'pu') or (Card.objects.get(
+                id=cardId).creator == request.user):
+            return True
+        else:
+            return False
 
     @staticmethod
     def isTruePost(request):

@@ -53,6 +53,9 @@ class Card(models.Model):
     assignUsers = models.ManyToManyField(User, related_name="assignCards", blank=True)
     deadLine = models.DateTimeField(auto_now_add=True, blank=True, verbose_name="deadLine")
 
+    def __str__(self):
+        return 'cardId: ' + str(self.id) + ' | ' + 'listId:' + str(self.listId) + ' | ' + str(self.creator)
+
 
 class Notification(models.Model):
     id = models.AutoField(primary_key=True, editable=False)

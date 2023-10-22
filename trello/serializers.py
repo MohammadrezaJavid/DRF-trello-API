@@ -77,7 +77,7 @@ class CardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
         fields = [
-            'title', 'createdAt', 'description', 'tag', 'notificationsStatus', 'deadLine',
+            'id', 'title', 'createdAt', 'description', 'tag', 'notificationsStatus', 'deadLine',
             'list', 'listId', 'creator', 'comments', 'assignUsers', 'notificationsCard',
         ]
         extra_kwargs = {

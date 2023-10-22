@@ -16,6 +16,7 @@ listDetail = views.ListView.as_view({
 })
 
 cardList = views.CardView.as_view({
+    'get': 'list',
     'post': 'create'
 })
 cardDetail = views.CardView.as_view({

@@ -49,12 +49,17 @@ class CardView(viewsets.ModelViewSet):
     queryset = models.Card.objects.all()
     serializer_class = serializers.CardSerializer
 
-    def get_queryset(self):
+    def list(self, request, *args, **kwargs):
         querysetAssignUser = models.Card.objects.filter(assignUsers__id=self.request.user.pk)
         querysetCreator = models.Card.objects.filter(creator=self.request.user.pk)
-        queryset = querysetCreator | querysetAssignUser
+        querysetPublic = models.Card.objects.all()
 
-        return queryset.distinct()
+        queryset = querysetCreator | querysetAssignUser | querysetPublic
+        queryset = queryset.distinct()
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         ID = int(self.request.data['listId'])
