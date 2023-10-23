@@ -27,7 +27,7 @@ class IsAccessToBoard(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (obj.creator == request.user) or (obj.visibility == 'pu') or (
-                request.user in obj.assignUsers)
+                request.user in obj.assignUsers.all())
 
 
 class IsAccessToList(permissions.BasePermission):
@@ -91,7 +91,8 @@ class IsAccessToCard(permissions.BasePermission):
                 List.objects.get(id=request.data['listId']).board.visibility == 'pu')
 
     def has_object_permission(self, request, view, obj):
-        return (obj.creator == request.user) or (obj.list.board.visibility == 'pu')
+        return (obj.creator == request.user) or (obj.list.board.visibility == 'pu') or (
+                    request.user in obj.assignUsers.all())
 
 
 class IsAccessToComment(permissions.BasePermission):
