@@ -8,6 +8,7 @@ from .permissions import (
     IsAccessToCard,
     IsAccessToComment
 )
+from accounts.models import User
 
 
 class BoardView(viewsets.ModelViewSet):
@@ -27,7 +28,6 @@ class BoardView(viewsets.ModelViewSet):
 
         return queryset.distinct()
 
-
 class ListView(viewsets.ModelViewSet):
     lookup_field = 'id'
     permission_classes = (IsAccessToList,)
@@ -41,7 +41,6 @@ class ListView(viewsets.ModelViewSet):
             serializer.save(board=board, creator=self.request.user)
         except models.Board.DoesNotExist:
             raise RuntimeWarning("Board Object is None")
-
 
 class CardView(viewsets.ModelViewSet):
     lookup_field = 'id'
@@ -63,9 +62,20 @@ class CardView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         ID = int(self.request.data['listId'])
+        emails = self.request.data['assignUsers']
+        
+        assign_user_id_list = []
+        
+        for email in emails:
+            try:
+                user = User.objects.get(email=email)
+                assign_user_id_list.append(user.id)
+            except User.DoesNotExist:
+                assert("user not found")
+        
         try:
             lists = models.List.objects.get(id=ID)
-            serializer.save(list=lists, creator=self.request.user)
+            serializer.save(list=lists, creator=self.request.user, assignUsers=assign_user_id_list)
         except models.List.DoesNotExist:
             raise RuntimeWarning("List Object is None")
 

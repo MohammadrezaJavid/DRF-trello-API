@@ -50,7 +50,7 @@ class Card(models.Model):
     list = models.ForeignKey(List, on_delete=models.CASCADE, related_name="cards")
     listId = models.IntegerField(editable=False, validators=[MinValueValidator(1)])
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cardsCreate")
-    assignUsers = models.ManyToManyField(User, related_name="assignCards", blank=True)
+    assignUsers = models.ManyToManyField(User, related_name="assignCards", blank=True, null=True)
     deadLine = models.DateTimeField(auto_now_add=True, blank=True, verbose_name="deadLine")
 
     def __str__(self):
