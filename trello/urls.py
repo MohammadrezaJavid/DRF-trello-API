@@ -2,10 +2,11 @@ from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
-router.register(r'boards', viewset=views.BoardView, basename='board')
+# router = DefaultRouter()
+# router.register(r'boards', viewset=views.BoardView, basename='board')
 
 listList = views.ListView.as_view({
+    'get': 'list',
     'post': 'create'
 })
 listDetail = views.ListView.as_view({
@@ -14,6 +15,18 @@ listDetail = views.ListView.as_view({
     'patch': 'partial_update',
     'delete': 'destroy'
 })
+
+boardList = views.BoardView.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+boardDetail = views.BoardView.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+
 
 cardList = views.CardView.as_view({
     'get': 'list',
@@ -46,7 +59,8 @@ notificationUserList = views.NotificationView.as_view({
 })
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('boards/', boardList, name='board-list'),
+    path('boards/<int:id>/', boardDetail, name='board-detail'),
 
     path('lists/', listList, name='list-list'),
     path('lists/<int:id>/', listDetail, name='list-detail'),
